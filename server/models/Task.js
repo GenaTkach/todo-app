@@ -15,8 +15,10 @@ const TaskSchema = new mongoose.Schema({
     default: Date.now,
   },
   priority: {
-    type: Number
-  }
+    type: String,
+    enum: ["high", "regular", "low"], // необязательно, но добавляет валидацию
+    default: "regular",
+  },
 });
 
 module.exports = mongoose.model("Task", TaskSchema);

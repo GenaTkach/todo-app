@@ -4,7 +4,7 @@ import axios from "axios";
 const TodoList = () => {
   const [tasks, setTasks] = useState([]);
   const [title, setText] = useState();
-  const [priority, setPriority] = useState();
+  const [priority, setPriority] = useState("regular");
 
   // Загрузка задач при загрузке компонента
   useEffect(() => {
@@ -26,7 +26,7 @@ const TodoList = () => {
       .then((res) => {
         setTasks([...tasks, res.data]);
         console.log("pr = ", priority);
-        setPriority(priority);
+        setPriority("regular"); // сбрасывает select
         setText("");
       })
       .catch((err) => console.error(err));
@@ -110,6 +110,8 @@ const TodoList = () => {
     </div>
   );
 };
+
+
 
 const styles = {
   container: {
