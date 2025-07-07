@@ -6,11 +6,47 @@ const TodoList = () => {
   const [title, setText] = useState();
   const [priority, setPriority] = useState("regular");
 
+  // 👇 Вставь сюда
+  const renderPriorityBadge = (priority) => {
+    const styles = {
+      high: {
+        backgroundColor: "#dc3545", // красный
+        color: "#fff",
+      },
+      regular: {
+        backgroundColor: "#ffc107", // жёлтый
+        color: "#000",
+      },
+      low: {
+        backgroundColor: "#28a745", // зелёный
+        color: "#fff",
+      },
+      badge: {
+        padding: "3px 8px",
+        borderRadius: "12px",
+        fontSize: "12px",
+        fontWeight: "bold",
+        marginLeft: "10px",
+        textTransform: "capitalize",
+      },
+    };
+
+    return (
+      <span style={{ ...styles.badge, ...styles[priority] }}>{priority}</span>
+    );
+  };
+
   // Загрузка задач при загрузке компонента
   useEffect(() => {
     axios
       .get("http://localhost:5000/api/tasks")
-      .then((res) => setTasks(res.data))
+      .then((res) => {
+        const sorted = res.data.sort((a, b) => {
+          const priorityOrder = { high: 0, regular: 1, low: 2 };
+          return priorityOrder[a.priority] - priorityOrder[b.priority];
+        });
+        setTasks(sorted);
+      })
       .catch((err) => console.error(err));
   }, []);
 
@@ -24,10 +60,17 @@ const TodoList = () => {
     axios
       .post("http://localhost:5000/api/tasks", { title, priority })
       .then((res) => {
-        setTasks([...tasks, res.data]);
-        console.log("pr = ", priority);
-        setPriority("regular"); // сбрасывает select
+        const newTasks = [...tasks, res.data];
+
+        // Сортировка по приоритету после добавления новой задачи
+        const sorted = newTasks.sort((a, b) => {
+          const priorityOrder = { high: 0, regular: 1, low: 2 };
+          return priorityOrder[a.priority] - priorityOrder[b.priority];
+        });
+
+        setTasks(sorted);
         setText("");
+        setPriority("regular"); // если хочешь сбросить после добавления
       })
       .catch((err) => console.error(err));
   };
@@ -100,7 +143,10 @@ const TodoList = () => {
               checked={task.completed}
               onChange={() => toggleCompleted(task)}
             />
-            <span style={styles.text(task.completed)}>{task.title}</span>
+            <span style={styles.text(task.completed)}>
+              {task.title}
+              {renderPriorityBadge(task.priority)}
+            </span>
             <button style={styles.button} onClick={() => deleteTask(task._id)}>
               Удалить
             </button>
@@ -110,8 +156,6 @@ const TodoList = () => {
     </div>
   );
 };
-
-
 
 const styles = {
   container: {
