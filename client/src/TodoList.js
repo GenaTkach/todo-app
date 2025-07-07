@@ -148,7 +148,7 @@ const TodoList = () => {
               {renderPriorityBadge(task.priority)}
             </span>
             <button style={styles.button} onClick={() => deleteTask(task._id)}>
-              Удалить
+              Remove
             </button>
           </li>
         ))}
