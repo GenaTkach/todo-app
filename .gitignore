@@ -1,0 +1,11 @@
+# игнорируем node_modules в обоих проектах
+/client/node_modules
+/server/node_modules
+
+# кэш npm
+npm-debug.log*
+*.log
+
+# системные файлы
+.DS_Store
+.env
