@@ -1,0 +1,90 @@
+/* Контейнер */
+.todo-container {
+  max-width: 500px;
+  margin: 50px auto;
+  padding: 20px;
+  border-radius: 10px;
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+  background-color: #f9f9f9;
+  font-family: Arial, sans-serif;
+}
+
+/* Инпуты */
+.input-container {
+  display: flex;
+  gap: 10px;
+  margin-bottom: 20px;
+}
+
+.todo-input {
+  flex: 1;
+  padding: 10px;
+  border-radius: 5px;
+  border: 1px solid #ccc;
+  font-size: 16px;
+}
+
+/* Кнопки */
+.todo-button {
+  padding: 10px 15px;
+  background-color: #007bff;
+  color: #fff;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+}
+
+.edit-button {
+  padding: 10px 15px;
+  background-color: #cc5500;
+  color: #fff;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+}
+
+/* Список */
+.todo-list-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 10px;
+  border-bottom: 1px solid #ddd;
+}
+
+/* Текст задачи */
+.task-text {
+  flex: 1;
+  margin-left: 10px;
+}
+
+/* Завершённые задачи */
+.completed {
+  text-decoration: line-through;
+  color: #888;
+}
+
+/* Приоритеты */
+.priority-badge {
+  padding: 3px 8px;
+  border-radius: 12px;
+  font-size: 12px;
+  font-weight: bold;
+  margin-left: 10px;
+  text-transform: capitalize;
+}
+
+.priority-high {
+  background-color: #dc3545;
+  color: #fff;
+}
+
+.priority-regular {
+  background-color: #ffc107;
+  color: #000;
+}
+
+.priority-low {
+  background-color: #28a745;
+  color: #fff;
+}

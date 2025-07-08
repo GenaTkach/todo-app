@@ -1,0 +1,23 @@
+.priority-badge {
+  padding: 3px 8px;
+  border-radius: 12px;
+  font-size: 12px;
+  font-weight: bold;
+  margin-left: 10px;
+  text-transform: capitalize;
+}
+
+.priority-high {
+  background-color: #dc3545;
+  color: #fff;
+}
+
+.priority-regular {
+  background-color: #ffc107;
+  color: #000;
+}
+
+.priority-low {
+  background-color: #28a745;
+  color: #fff;
+}

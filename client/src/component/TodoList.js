@@ -1,40 +1,18 @@
 import React, { useEffect, useState } from "react";
 import axios from "axios";
+import "../style/TodoList.css";
+import PriorityBadge from "./PriorityBadge";
+
 
 const TodoList = () => {
   const [tasks, setTasks] = useState([]);
-  const [title, setText] = useState();
+  const [title, setTitle] = useState();
   const [priority, setPriority] = useState("regular");
+  const [editTaskId, setEditTaskId] = useState(null);
+  const [editTitle, setEditTitle] = useState("");
+  const [editPriority, setEditPriority] = useState("regular"); // или "" по умолчанию
 
-  // 👇 Вставь сюда
-  const renderPriorityBadge = (priority) => {
-    const styles = {
-      high: {
-        backgroundColor: "#dc3545", // красный
-        color: "#fff",
-      },
-      regular: {
-        backgroundColor: "#ffc107", // жёлтый
-        color: "#000",
-      },
-      low: {
-        backgroundColor: "#28a745", // зелёный
-        color: "#fff",
-      },
-      badge: {
-        padding: "3px 8px",
-        borderRadius: "12px",
-        fontSize: "12px",
-        fontWeight: "bold",
-        marginLeft: "10px",
-        textTransform: "capitalize",
-      },
-    };
-
-    return (
-      <span style={{ ...styles.badge, ...styles[priority] }}>{priority}</span>
-    );
-  };
+  <PriorityBadge priority={tasks.priority} />
 
   // Загрузка задач при загрузке компонента
   useEffect(() => {
@@ -69,7 +47,7 @@ const TodoList = () => {
         });
 
         setTasks(sorted);
-        setText("");
+        setTitle("");
         setPriority("regular"); // если хочешь сбросить после добавления
       })
       .catch((err) => console.error(err));
@@ -83,6 +61,22 @@ const TodoList = () => {
         setTasks(tasks.filter((task) => task._id !== id));
       })
       .catch((err) => console.error(err));
+  };
+
+  // Обновлене задачи
+  const editTask = (id) => {
+    axios
+      .patch(`http://localhost:5000/api/tasks/${id}`)
+      .then(() => {
+        setTasks(tasks.filter((task) => task._id !== id));
+      })
+      .catch((err) => console.error(err));
+  };
+
+  const startEditing = (task) => {
+    setEditTaskId(task._id); // включаем режим редактирования
+    setTitle(task.title); // это мы добавим чуть позже
+    setPriority(task.priority); // тоже позже добавим
   };
 
   const toggleCompleted = (task) => {
@@ -107,99 +101,62 @@ const TodoList = () => {
   };
 
   return (
-    <div style={styles.container}>
+    <div className="todo-container">
       <h1>Yo</h1>
-      <div style={styles.inputContainer}>
+      <div className="input-container">
         <input
           type="text"
           value={title}
-          onChange={(e) => setText(e.target.value)}
+          onChange={(e) => setTitle(e.target.value)}
           placeholder="Create task"
           onKeyDown={(e) => {
             if (e.key === "Enter") addTask();
           }}
-          style={styles.input}
+          className="todo-input"
         />
-        <form>
-          <select
-            name="priority"
-            value={priority}
-            onChange={(e) => setPriority(e.target.value)}
-            style={styles.input}
-          >
-            <option value="high">High</option>
-            <option value="regular">Regular</option>
-            <option value="low">Low</option>
-          </select>
-        </form>
-        <button onClick={addTask}>Add task</button>
+        <select
+          name="priority"
+          value={priority}
+          onChange={(e) => setPriority(e.target.value)}
+          className="todo-input"
+        >
+          <option value="high">High</option>
+          <option value="regular">Regular</option>
+          <option value="low">Low</option>
+        </select>
+        <button onClick={addTask} className="todo-button">
+          Add task
+        </button>
       </div>
 
       <ul style={{ padding: 0, listStyle: "none" }}>
         {tasks.map((task) => (
-          <li key={task._id} style={styles.listItem}>
+          <li key={task._id} className="todo-list-item">
             <input
               type="checkbox"
               checked={task.completed}
               onChange={() => toggleCompleted(task)}
             />
-            <span style={styles.text(task.completed)}>
+            <span className={`task-text ${task.completed ? "completed" : ""}`}>
               {task.title}
-              {renderPriorityBadge(task.priority)}
+              <span className={`priority-badge priority-${task.priority}`}>
+                {task.priority}
+              </span>
             </span>
-            <button style={styles.button} onClick={() => deleteTask(task._id)}>
+            <button
+              onClick={() => deleteTask(task._id)}
+              className="todo-button"
+            >
               Remove
+            </button>
+            <button onClick={() => startEditing(task)} className="edit-button">
+              Edit
             </button>
           </li>
         ))}
       </ul>
     </div>
   );
-};
-
-const styles = {
-  container: {
-    maxWidth: "500px",
-    margin: "50px auto",
-    padding: "20px",
-    borderRadius: "10px",
-    boxShadow: "0 0 10px rgba(0,0,0,0.1)",
-    backgroundColor: "#f9f9f9",
-    fontFamily: "Arial, sans-serif",
-  },
-  inputContainer: {
-    display: "flex",
-    gap: "10px",
-    marginBottom: "20px",
-  },
-  input: {
-    flex: 1,
-    padding: "10px",
-    borderRadius: "5px",
-    border: "1px solid #ccc",
-    fontSize: "16px",
-  },
-  button: {
-    padding: "10px 15px",
-    backgroundColor: "#007bff",
-    color: "#fff",
-    border: "none",
-    borderRadius: "5px",
-    cursor: "pointer",
-  },
-  listItem: {
-    display: "flex",
-    alignItems: "center",
-    justifyContent: "space-between",
-    padding: "10px",
-    borderBottom: "1px solid #ddd",
-  },
-  text: (completed) => ({
-    textDecoration: completed ? "line-through" : "none",
-    color: completed ? "#888" : "#000",
-    flex: 1,
-    marginLeft: "10px",
-  }),
 };
 
 export default TodoList;
