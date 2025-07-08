@@ -3,7 +3,6 @@ import axios from "axios";
 import "../style/TodoList.css";
 import PriorityBadge from "./PriorityBadge";
 
-
 const TodoList = () => {
   const [tasks, setTasks] = useState([]);
   const [title, setTitle] = useState();
@@ -12,7 +11,7 @@ const TodoList = () => {
   const [editTitle, setEditTitle] = useState("");
   const [editPriority, setEditPriority] = useState("regular"); // или "" по умолчанию
 
-  <PriorityBadge priority={tasks.priority} />
+  <PriorityBadge priority={tasks.priority} />;
 
   // Загрузка задач при загрузке компонента
   useEffect(() => {
@@ -28,27 +27,40 @@ const TodoList = () => {
       .catch((err) => console.error(err));
   }, []);
 
-  // Добавление новой задачи
   const addTask = () => {
-    if (title == null) {
-      return;
-    }
-    if (!title.trim()) return;
+    if (title == null || !title.trim()) return;
 
+    // Сначала загружаем все задачи
     axios
-      .post("http://localhost:5000/api/tasks", { title, priority })
+      .get("http://localhost:5000/api/tasks")
       .then((res) => {
-        const newTasks = [...tasks, res.data];
+        const exists = res.data.some(
+          (task) =>
+            task.title.trim().toLowerCase() === title.trim().toLowerCase() &&
+            task.priority === priority
+        );
 
-        // Сортировка по приоритету после добавления новой задачи
-        const sorted = newTasks.sort((a, b) => {
-          const priorityOrder = { high: 0, regular: 1, low: 2 };
-          return priorityOrder[a.priority] - priorityOrder[b.priority];
-        });
+        if (exists) {
+          alert("Такая задача уже существует.");
+          return;
+        }
 
-        setTasks(sorted);
-        setTitle("");
-        setPriority("regular"); // если хочешь сбросить после добавления
+        // Если не существует — добавляем
+        axios
+          .post("http://localhost:5000/api/tasks", { title, priority })
+          .then((res) => {
+            const newTasks = [...tasks, res.data];
+
+            const sorted = newTasks.sort((a, b) => {
+              const priorityOrder = { high: 0, regular: 1, low: 2 };
+              return priorityOrder[a.priority] - priorityOrder[b.priority];
+            });
+
+            setTasks(sorted);
+            setTitle("");
+            setPriority("regular");
+          })
+          .catch((err) => console.error(err));
       })
       .catch((err) => console.error(err));
   };
